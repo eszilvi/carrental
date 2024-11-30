@@ -4,10 +4,10 @@ from Truck import Truck
 import datetime
 
 class CarRentalSystem:
+    rental_next_id = 5
+
     def __get_vehicle_by_id(self, id):
         for car in self.cars:
-            print(id, " ", car.id)
-            if car.id == id: print("its a match1")
             if car.id == id: return car
 
         return None
@@ -26,10 +26,13 @@ class CarRentalSystem:
     def rent_a_car(self):
         for car in self.cars:
             print(f"{car.id} {car.type}")
+        print("X. kilépés")
 
         while True:
             try:
-                car_id_entered = int(input("Melyik autót kívánja bérbe adni?"))
+                car_id_entered = input("Melyik autót kívánja bérbe adni?")
+                if car_id_entered == "x": break
+                car_id_entered = int(car_id_entered)
             except ValueError as e:
                 print(f"Érvénytelen adat: {e}")
                 continue
@@ -45,7 +48,19 @@ class CarRentalSystem:
             except ValueError as e:
                 print(e)
 
-            print(date_entered)
+            already_reserved = False
+            for rental in self.rentals:
+                if rental.car.id == car_to_rent.id and rental.day == date_entered:
+                    already_reserved = True
+                    break
+
+            if already_reserved:
+                print("Ez az autó erre a napra már foglalt")
+                break
+
+            self.rentals.append(Rental(self.rental_next_id, car_to_rent, date_entered))
+            self.rental_next_id += 1
+            break
 
     def list_rentals(self):
         for rental in self.rentals:
@@ -59,6 +74,15 @@ class CarRentalSystem:
             except ValueError as e:
                 print(f"Érvénytelen adat: {e}")
                 continue
+
+            c = 0
+
+            for rental in self.rentals:
+                if rental.id == car_id_entered:
+                    self.rentals.pop(c)
+                    break
+                c += 1
+            break
         pass
 
     def print_options(self):
@@ -68,7 +92,6 @@ class CarRentalSystem:
         print("X. Kilépés")
 
     def __init__(self):
-        print("a")
         self.cars = [
             Car(1, "HSH-746", "Toyota Avensis 1.8 Sol", 10000),
             Truck(2, "BXD-344", "Mercedes Vito", 8000),
@@ -81,6 +104,8 @@ class CarRentalSystem:
             Rental(3, self.cars[1], datetime.date(2024, 12, 2)),
             Rental(4, self.cars[1], datetime.date(2024, 12, 3))
         ]
+
+        self.rental_next_id = 5
 
         while True:
             self.print_options()
@@ -96,6 +121,5 @@ class CarRentalSystem:
                     break
                 case _:
                     print("Ez az opció nem választható")
-
 
 car_rental_system = CarRentalSystem()

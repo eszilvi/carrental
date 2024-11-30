@@ -5,4 +5,3 @@ class Rental(Common):
         super().__init__(id)
         self.car = car
         self.day = day
-
