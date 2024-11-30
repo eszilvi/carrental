@@ -1,25 +1,71 @@
 from Car import Car
 from Rental import Rental
 from Truck import Truck
-from Vehicle import Vehicle
 import datetime
 
 class CarRentalSystem:
+    def __get_vehicle_by_id(self, id):
+        for car in self.cars:
+            print(id, " ", car.id)
+            if car.id == id: print("its a match1")
+            if car.id == id: return car
 
-    def rent_a_car(self, car_id, day):
-        pass
+        return None
 
-    def cancel_rental(self, rental_id):
-        pass
+    def __is_vehicle_rentable(self, vehicle_id, date):
+        vehicle = self.__get_vehicle_by_id(vehicle_id)
+        print(vehicle)
+
+        if vehicle is None: raise ValueError(f"Nincs ilyen azonosítójú jármű a rendszerben: {vehicle_id} ")
+
+        for rental in self.rentals:
+            if vehicle.id == vehicle_id and rental.day == date: return False
+
+        return True
+
+    def rent_a_car(self):
+        for car in self.cars:
+            print(f"{car.id} {car.type}")
+
+        while True:
+            try:
+                car_id_entered = int(input("Melyik autót kívánja bérbe adni?"))
+            except ValueError as e:
+                print(f"Érvénytelen adat: {e}")
+                continue
+
+            car_to_rent = self.__get_vehicle_by_id(car_id_entered)
+            if car_to_rent is None:
+                print(f"A megadott jármű nem található")
+                continue
+
+            try:
+                date_entered = input("Melyik napra kívánja bérbe adni a járművet? (éééé-hh-nn) ")
+                datetime.datetime.strptime(date_entered, "%Y-%m-%d")
+            except ValueError as e:
+                print(e)
+
+            print(date_entered)
 
     def list_rentals(self):
         for rental in self.rentals:
-            print(rental.car.type, "aa")
+            print(rental.id, " - ", rental.car.type, " - ", rental.day)
+
+    def cancel_rental(self):
+        self.list_rentals()
+        while True:
+            try:
+                car_id_entered = int(input("Melyik bérlést kívánja lemondani?"))
+            except ValueError as e:
+                print(f"Érvénytelen adat: {e}")
+                continue
+        pass
 
     def print_options(self):
         print("1. Autó bérlése")
         print("2. Bérlés lemondása")
         print("3. Bérlések listázása")
+        print("X. Kilépés")
 
     def __init__(self):
         print("a")
@@ -36,6 +82,20 @@ class CarRentalSystem:
             Rental(4, self.cars[1], datetime.date(2024, 12, 3))
         ]
 
-        list_re
+        while True:
+            self.print_options()
+            option = input("Kérem, válasszon:")
+            match option:
+                case "1":
+                    self.rent_a_car()
+                case "2":
+                    self.cancel_rental()
+                case "3":
+                    self.list_rentals()
+                case "x":
+                    break
+                case _:
+                    print("Ez az opció nem választható")
+
 
 car_rental_system = CarRentalSystem()
